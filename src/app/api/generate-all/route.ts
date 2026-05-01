@@ -3,10 +3,9 @@ import { loadConfig } from '@/lib/config';
 import { GoogleSheetReader } from '@/lib/googleSheetReader';
 import { TTSEngine } from '@/lib/ttsEngine';
 
-const config = loadConfig();
-const tts = new TTSEngine(config.tts);
-
 export async function POST() {
+  const config = loadConfig();
+  const tts = new TTSEngine(config.tts);
   const reader = new GoogleSheetReader(config.google_sheets);
   let items;
   try {
