@@ -1,0 +1,5 @@
+config.json
+output/
+tts_helper.py
+.next/
+node_modules/

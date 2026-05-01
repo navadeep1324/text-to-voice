@@ -1,0 +1,16 @@
+{
+  "google_sheets": {
+    "sheet_id": "YOUR_GOOGLE_SHEET_ID",
+    "tabs": ["Tab1", "Tab2", "Tab3"],
+    "date_column": "Date",
+    "tasks_column": "Tasks",
+    "targeted_date_column": "Targeted Date",
+    "remarks_column": "Remarks"
+  },
+  "tts": {
+    "voice": "en-IN-NeerjaExpressiveNeural",
+    "rate": "+0%",
+    "volume": "+0%",
+    "output_folder": "output/audio"
+  }
+}
