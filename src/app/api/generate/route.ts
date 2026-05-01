@@ -63,5 +63,9 @@ export async function POST(request: NextRequest) {
   const audioBase64 = fs.readFileSync(audioPath).toString('base64');
   const filename = audioPath.split(/[\\/]/).pop();
 
-  return Response.json({ tab_name: tabName, date_id: dateId, filename, voice_text: voiceText, audio_base64: audioBase64 });
+  const proto = request.headers.get('x-forwarded-proto') || 'https';
+  const host = request.headers.get('host');
+  const audioUrl = `${proto}://${host}/audio/${filename}`;
+
+  return Response.json({ tab_name: tabName, date_id: dateId, filename, voice_text: voiceText, audio_base64: audioBase64, audio_url: audioUrl });
 }

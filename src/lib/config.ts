@@ -30,7 +30,7 @@ export function loadConfig() {
       voice: voice || 'en-IN-NeerjaExpressiveNeural',
       rate: process.env.TTS_RATE || '+0%',
       volume: process.env.TTS_VOLUME || '+0%',
-      output_folder: process.env.OUTPUT_FOLDER || 'output/audio',
+      output_folder: process.env.OUTPUT_FOLDER || 'public/audio',
     },
   };
 }
