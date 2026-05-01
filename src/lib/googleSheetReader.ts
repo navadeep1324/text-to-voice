@@ -94,7 +94,7 @@ export class GoogleSheetReader {
       if (parts.length === 0) continue;
 
       const readable = readableDate(dateLabel);
-      const voiceText = `${tabName}. DM tasks update on ${readable}. ${parts.join(' ')}`;
+      const voiceText = `DM tasks update on ${readable}. ${parts.join(' ')}`;
       const dateId = dateLabel.replace(/[^\w]/g, '_');
       summaries.push([tabName, dateId, voiceText]);
       console.log(`Tab '${tabName}' / '${dateLabel}': ${parts.length} task line(s)`);
