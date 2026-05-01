@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(python -c \"import api; print\\('API imports OK'\\)\")",
+      "Bash(python -c \"import edge_tts; import inspect; print\\(inspect.getfile\\(edge_tts\\)\\)\")",
+      "Bash(git rm *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
+    ]
+  }
+}
