@@ -4,10 +4,12 @@ import { loadConfig } from '@/lib/config';
 import { GoogleSheetReader } from '@/lib/googleSheetReader';
 import { TTSEngine } from '@/lib/ttsEngine';
 
-const config = loadConfig();
-const tts = new TTSEngine(config.tts);
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
+  const config = loadConfig();
+  const tts = new TTSEngine(config.tts);
+
   let body: { tab_name?: string; sheet_id?: string; date_filter?: string } = {};
   try {
     body = await request.json();

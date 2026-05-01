@@ -3,6 +3,8 @@ import { loadConfig } from '@/lib/config';
 import { GoogleSheetReader } from '@/lib/googleSheetReader';
 import { TTSEngine } from '@/lib/ttsEngine';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST() {
   const config = loadConfig();
   const tts = new TTSEngine(config.tts);
