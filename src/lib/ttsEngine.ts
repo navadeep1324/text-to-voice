@@ -97,8 +97,10 @@ async function synthesize(
     const chunks: Buffer[] = [];
     let settled = false;
 
-    const done = (buf: Buffer) => { if (!settled) { settled = true; ws.terminate(); resolve(buf); } };
-    const fail = (err: Error)  => { if (!settled) { settled = true; ws.terminate(); reject(err); } };
+    const done = (buf: Buffer) => { if (!settled) { settled = true; clearTimeout(timer); ws.terminate(); resolve(buf); } };
+    const fail = (err: Error)  => { if (!settled) { settled = true; clearTimeout(timer); ws.terminate(); reject(err); } };
+
+    const timer = setTimeout(() => fail(new Error('TTS timed out after 60s — check if outbound WebSocket is allowed on this host')), 60_000);
 
     ws.on('open', () => {
       const reqId = randomBytes(16).toString('hex');
