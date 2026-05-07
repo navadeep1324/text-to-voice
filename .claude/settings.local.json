@@ -7,7 +7,33 @@
       "Bash(git rm *)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Read(//c/Users/Navadeep/**)",
+      "Bash(python3 -c ' *)",
+      "Bash(npm install *)",
+      "Bash(curl -s http://localhost:8000/api/health)",
+      "Bash(curl -s -X POST http://localhost:8000/api/generate-excel -H 'Content-Type: application/json' -d '{\"file_path\":\"C:/Users/Navadeep/Downloads/update_4th_may_2026.xlsx\",\"sheet_name\":\"Updates\"}')",
+      "Bash(curl -s http://localhost:8000/api/job/266b89226462f6cf)",
+      "Bash(curl -s http://localhost:8000/api/job/5d5a273b87997e4e)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('STATUS:', d.get\\('status'\\)\\); print\\('FILE:', d.get\\('filename'\\)\\); print\\('TEXT:', d.get\\('voice_text',''\\)[:1000]\\)\")",
+      "Bash(curl -s http://localhost:8000/api/job/0db83afd28b53752)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('STATUS:', d.get\\('status'\\)\\); print\\('FILE:', d.get\\('filename'\\)\\); print\\(\\); print\\('VOICE TEXT:'\\); print\\(d.get\\('voice_text',''\\)[:1200]\\)\")",
+      "Bash(curl -s -X POST http://localhost:8000/api/generate-sharepoint -H 'Content-Type: application/json' -d '{\"sheet_name\":\"Updates\"}')",
+      "Bash(curl -s http://localhost:8000/api/job/0eed9d7ce706af71)",
+      "Bash(git -C \"c:/Users/Navadeep/OneDrive - Kleza Solutions Pvt Ltd/Desktop/text to voice\" log --oneline -20)",
+      "Bash(git -C \"c:/Users/Navadeep/OneDrive - Kleza Solutions Pvt Ltd/Desktop/text to voice\" show HEAD:config.json)",
+      "Bash(git -C \"c:/Users/Navadeep/OneDrive - Kleza Solutions Pvt Ltd/Desktop/text to voice\" stash list)",
+      "Bash(git -C \"c:/Users/Navadeep/OneDrive - Kleza Solutions Pvt Ltd/Desktop/text to voice\" log --all --oneline)",
+      "Bash(git -C \"c:/Users/Navadeep/OneDrive - Kleza Solutions Pvt Ltd/Desktop/text to voice\" diff HEAD)",
+      "Bash(grep -o '\"tenant_id\":\"[^\"]*\"\\\\|\"client_id\":\"[^\"]*\"\\\\|\"client_secret\":\"[^\"]*\"\\\\|tenant[_-]id[\": ]*[a-f0-9-]\\\\{30,\\\\}\\\\|client[_-]id[\": ]*[a-f0-9-]\\\\{30,\\\\}' \"C:/Users/Navadeep/.claude/projects/c--Users-Navadeep-OneDrive---Kleza-Solutions-Pvt-Ltd-Desktop-text-to-voice/5515784c-9394-465e-847f-2501b102e20a.jsonl\")",
+      "Bash(curl -s http://localhost:8000/api/job/c4bfd749d3a2153a)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('STATUS:', d.get\\('status'\\)\\); print\\('FILE:', d.get\\('filename'\\)\\); e=d.get\\('error',''\\); e and print\\('ERROR:', e\\)\")",
+      "Bash(curl -s http://localhost:8000/api/job/0d4720dc0a9ebcb2)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('TOKEN OK' if d.get\\('access_token'\\) else 'AUTH FAILED: '+str\\(d\\)\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('SITE ID:', d.get\\('id','ERROR: '+str\\(d.get\\('error',d\\)\\)\\)\\)\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\Navadeep\\OneDrive - Kleza Solutions Pvt Ltd\\Desktop\\text to voice\\src\\app\\api\\job"
     ]
   }
 }

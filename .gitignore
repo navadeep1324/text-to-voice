@@ -1,4 +1,6 @@
 config.json
+.env*.local
+.env
 output/
 tts_helper.py
 .next/

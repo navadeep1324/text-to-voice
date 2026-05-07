@@ -1,4 +1,19 @@
 {
+  "sharepoint": {
+    "tenant_id": "YOUR_TENANT_ID",
+    "client_id": "YOUR_CLIENT_ID",
+    "host": "yourtenant.sharepoint.com",
+    "site_path": "/sites/YourSite",
+    "file_path": "Shared Documents/path/to/workbook.xlsx",
+    "sheets": ["AI Team", "Dev Team", "DM Team"]
+  },
+  "teams": {
+    "public_base_url": "https://your-domain.com"
+  },
+  "schedule": {
+    "cron": "30 19 * * 1-5",
+    "timezone": "Asia/Kolkata"
+  },
   "google_sheets": {
     "sheet_id": "YOUR_GOOGLE_SHEET_ID",
     "tabs": ["Tab1", "Tab2", "Tab3"],
