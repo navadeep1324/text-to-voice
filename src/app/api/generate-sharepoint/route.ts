@@ -9,7 +9,7 @@ import { parseSheetRows, buildSectionedVoiceText } from '@/lib/excelParser';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateSharePointAudio(proto = 'http', host = 'localhost:8000') {
+async function generateSharePointAudio(proto = 'http', host = 'localhost:8000') {
   const config = loadConfig();
 
   if (!config.sharepoint) {

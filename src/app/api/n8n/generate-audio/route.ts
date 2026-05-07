@@ -1,4 +1,3 @@
-import path from 'path';
 import { NextRequest } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -37,9 +36,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const scriptPath = path.join(process.cwd(), 'scripts', 'generate-sharepoint-audio.cjs');
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { runJob } = require(scriptPath) as {
+    const { runJob } = require('../../../../../scripts/generate-sharepoint-audio.cjs') as {
       runJob: (options: {
         persistAudio: boolean;
         notifyTeams: boolean;

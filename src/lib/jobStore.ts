@@ -6,6 +6,7 @@ export interface JobResult {
   voice_text?: string;
   audio_url?: string;
   audio_base64?: string;
+  results?: { sheet: string; filename: string; audio_url: string }[];
   error?: string;
 }
 
