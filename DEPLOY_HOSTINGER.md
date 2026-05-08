@@ -59,11 +59,19 @@ Cron command:
 ## Required environment variables
 
 ```env
-SP_CLIENT_SECRET=your-sharepoint-client-secret
 N8N_API_KEY=your-random-n8n-api-key
+SP_TENANT_ID=your-tenant-id
+SP_CLIENT_ID=your-client-id
+SP_CLIENT_SECRET=your-sharepoint-client-secret
+SP_HOST=yourtenant.sharepoint.com
+SP_SITE_PATH=/sites/YourSite
+SP_FILE_PATH=Shared Documents/path/to/workbook.xlsx
+SP_SHEETS=AI Team,Dev Team,DM Team
 ```
 
 `TEAMS_WEBHOOK_URL` is only needed if you use the optional direct cron/webhook mode. The n8n API mode does not need it.
+
+If `config.json` is present in the app working directory, the script reads non-secret SharePoint settings from it. On Hostinger, the Node.js app may run from a `nodejs` working directory where `config.json` is not present, so environment variables are the safest deployment option.
 
 ## Config for link-based webhook mode only
 

@@ -24,6 +24,50 @@ function loadLocalEnv() {
   return env;
 }
 
+function splitCsv(value, fallback = []) {
+  if (!value) return fallback;
+  return value.split(',').map((item) => item.trim()).filter(Boolean);
+}
+
+function loadConfig(env) {
+  const configPath = path.join(process.cwd(), 'config.json');
+  if (fs.existsSync(configPath)) {
+    return JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+  }
+
+  const required = [
+    'SP_TENANT_ID',
+    'SP_CLIENT_ID',
+    'SP_HOST',
+    'SP_SITE_PATH',
+    'SP_FILE_PATH',
+  ];
+  const missing = required.filter((key) => !process.env[key] && !env[key]);
+  if (missing.length > 0) {
+    throw new Error(`config.json not found and missing environment variables: ${missing.join(', ')}`);
+  }
+
+  return {
+    sharepoint: {
+      tenant_id: process.env.SP_TENANT_ID || env.SP_TENANT_ID,
+      client_id: process.env.SP_CLIENT_ID || env.SP_CLIENT_ID,
+      host: process.env.SP_HOST || env.SP_HOST,
+      site_path: process.env.SP_SITE_PATH || env.SP_SITE_PATH,
+      file_path: process.env.SP_FILE_PATH || env.SP_FILE_PATH,
+      sheets: splitCsv(process.env.SP_SHEETS || env.SP_SHEETS, ['AI Team', 'Dev Team', 'DM Team']),
+    },
+    tts: {
+      voice: process.env.TTS_VOICE || env.TTS_VOICE || 'en-IN-NeerjaExpressiveNeural',
+      rate: process.env.TTS_RATE || env.TTS_RATE || '+0%',
+      volume: process.env.TTS_VOLUME || env.TTS_VOLUME || '+0%',
+      output_folder: process.env.OUTPUT_FOLDER || env.OUTPUT_FOLDER || 'public/audio',
+    },
+    teams: {
+      public_base_url: process.env.PUBLIC_BASE_URL || env.PUBLIC_BASE_URL,
+    },
+  };
+}
+
 function dateToString() {
   const now = new Date();
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -225,13 +269,6 @@ function hasCurrentDateUpdate(rows, todayLabel) {
   return normalizeDateLabel(rowAfterHeader[0]) === normalizeDateLabel(todayLabel);
 }
 
-function insertEmptyRowsAfterHeader(workbook, sheetName, emptyRowCount = 20) {
-  const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1, defval: null });
-  const headerRow = rows[0] || [];
-  const restRows = rows.slice(1);
-  const emptyRows = Array.from({ length: emptyRowCount }, () => []);
-  workbook.Sheets[sheetName] = XLSX.utils.aoa_to_sheet([headerRow, ...emptyRows, ...restRows]);
-}
 
 function encodePath(filePath) {
   return filePath.split('/').map(encodeURIComponent).join('/');
@@ -356,7 +393,7 @@ async function runJob(options = {}) {
   const notifyTeams = options.notifyTeams ?? true;
   const includeBase64 = options.includeBase64 ?? false;
   const env = loadLocalEnv();
-  const config = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'config.json'), 'utf-8'));
+  const config = loadConfig(env);
   const sharepoint = { ...config.sharepoint, client_secret: process.env.SP_CLIENT_SECRET || env.SP_CLIENT_SECRET };
   if (!sharepoint.client_secret) throw new Error('SP_CLIENT_SECRET is missing. Add it to .env.local.');
 
@@ -413,13 +450,9 @@ async function runJob(options = {}) {
     }
 
     results.push(result);
-    insertEmptyRowsAfterHeader(workbook, sheetName, 20);
   }
 
   if (results.length > 0) {
-    const updatedWorkbook = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-    await uploadSharePointFile(sharepoint, siteId, updatedWorkbook);
-    console.log('SharePoint workbook updated with 20 empty rows after the header row for generated sheet(s).');
     if (notifyTeams) {
       await sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL || env.TEAMS_WEBHOOK_URL, config, results);
     }
