@@ -192,7 +192,16 @@ function synthesize(text, voice, rate, volume) {
   });
 }
 
-function buildSectionedVoiceText(rows, includeDateIntro = true) {
+function isPreviousDate(value, todayLabel) {
+  const normalized = normalizeDateLabel(value);
+  if (!/\d+\s+[a-z]+\s+\d{4}/.test(normalized)) return false;
+  const parsed = new Date(normalized);
+  if (isNaN(parsed.getTime())) return false;
+  const today = new Date(normalizeDateLabel(todayLabel));
+  return parsed < today;
+}
+
+function buildSectionedVoiceText(rows, includeDateIntro = true, todayLabel = '') {
   const sections = [];
   let dateIntro = '';
 
@@ -205,8 +214,10 @@ function buildSectionedVoiceText(rows, includeDateIntro = true) {
     if (col0 && !col1) {
       if (col0 === col0.toUpperCase() && col0.replace(/[^A-Z]/g, '').length > 2) {
         sections.push({ header: col0, sub: '', tasks: [] });
-      } else if (sections.length === 0 && !dateIntro) {
+      } else if (!dateIntro) {
         dateIntro = col0;
+      } else if (isPreviousDate(col0, todayLabel)) {
+        break;
       } else if (sections.length > 0) {
         sections[sections.length - 1].sub = col0;
       }
@@ -419,7 +430,7 @@ async function runJob(options = {}) {
       continue;
     }
 
-    const text = buildSectionedVoiceText(rows, voiceSegments.length === 0);
+    const text = buildSectionedVoiceText(rows, voiceSegments.length === 0, todayLabel);
     if (!text) {
       skipped.push({ sheet: sheetName, reason: 'no voice text' });
       console.log(`Skipping ${sheetName}: no voice text`);
