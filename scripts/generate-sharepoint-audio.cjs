@@ -430,7 +430,7 @@ async function runJob(options = {}) {
       continue;
     }
 
-    const text = buildSectionedVoiceText(rows, voiceSegments.length === 0, todayLabel);
+    const text = buildSectionedVoiceText(rows, false, todayLabel);
     if (!text) {
       skipped.push({ sheet: sheetName, reason: 'no voice text' });
       console.log(`Skipping ${sheetName}: no voice text`);
@@ -445,7 +445,7 @@ async function runJob(options = {}) {
     return { result: 'OK', workbook: sharepoint.file_path, today: todayLabel, results: [], skipped };
   }
 
-  const combinedText = voiceSegments.map(s => s.text).join(' ');
+  const combinedText = `${todayLabel}. ${voiceSegments.map(s => s.text).join(' ')}`;
   const includedSheets = voiceSegments.map(s => s.sheetName).join(', ');
   const safeDate = todayLabel.replace(/\s+/g, '_').replace(/[^\w-]/g, '');
   const filename = `sharepoint__daily_update_${safeDate}.mp3`;
