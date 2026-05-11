@@ -192,7 +192,7 @@ function synthesize(text, voice, rate, volume) {
   });
 }
 
-function buildSectionedVoiceText(rows) {
+function buildSectionedVoiceText(rows, includeDateIntro = true) {
   const sections = [];
   let dateIntro = '';
 
@@ -224,7 +224,7 @@ function buildSectionedVoiceText(rows) {
   }
 
   const parts = [];
-  if (dateIntro) parts.push(`Updates for ${dateIntro}.`);
+  if (includeDateIntro && dateIntro) parts.push(`Updates for ${dateIntro}.`);
   for (const section of sections) {
     if (section.tasks.length === 0) continue;
     if (section.header) parts.push(`${section.header}.`);
@@ -405,6 +405,8 @@ async function runJob(options = {}) {
   const results = [];
   const skipped = [];
   const todayLabel = dateLabelForIst();
+  const voiceSegments = [];
+
   for (const sheetName of sharepoint.sheets || workbook.SheetNames) {
     if (!workbook.SheetNames.includes(sheetName)) {
       throw new Error(`Sheet '${sheetName}' not found. Available: ${workbook.SheetNames.join(', ')}`);
@@ -417,50 +419,83 @@ async function runJob(options = {}) {
       continue;
     }
 
-    const voiceText = buildSectionedVoiceText(rows);
-    if (!voiceText) {
+    const text = buildSectionedVoiceText(rows, voiceSegments.length === 0);
+    if (!text) {
       skipped.push({ sheet: sheetName, reason: 'no voice text' });
       console.log(`Skipping ${sheetName}: no voice text`);
       continue;
     }
 
-    console.log(`Synthesizing ${sheetName} (${voiceText.length} chars)`);
-    const audioBuffer = await synthesize(
-      voiceText,
-      config.tts?.voice || 'en-IN-NeerjaExpressiveNeural',
-      config.tts?.rate || '+0%',
-      config.tts?.volume || '+0%'
-    );
-    const safeSheet = sheetName.replace(/\s+/g, '_').replace(/[^\w-]/g, '_');
-    const filename = `sharepoint__${safeSheet}.mp3`;
-    const result = { sheet: sheetName, filename, bytes: audioBuffer.length };
-
-    if (persistAudio) {
-      const outputPath = path.join(outputFolder, filename);
-      fs.writeFileSync(outputPath, audioBuffer);
-      result.outputPath = outputPath;
-      console.log(`Saved ${filename} (${audioBuffer.length} bytes)`);
-    } else {
-      console.log(`Generated ${filename} (${audioBuffer.length} bytes, not saved to disk)`);
-    }
-
-    if (includeBase64) {
-      result.contentType = 'audio/mpeg';
-      result.base64 = audioBuffer.toString('base64');
-    }
-
-    results.push(result);
+    voiceSegments.push({ sheetName, text });
   }
 
-  if (results.length > 0) {
-    if (notifyTeams) {
-      await sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL || env.TEAMS_WEBHOOK_URL, config, results);
-    }
-  } else {
+  if (voiceSegments.length === 0) {
     console.log('No current-date updates found. Audio generation and Teams notification skipped.');
+    return { result: 'OK', workbook: sharepoint.file_path, today: todayLabel, results: [], skipped };
+  }
+
+  const combinedText = voiceSegments.map(s => s.text).join(' ');
+  const includedSheets = voiceSegments.map(s => s.sheetName).join(', ');
+  const safeDate = todayLabel.replace(/\s+/g, '_').replace(/[^\w-]/g, '');
+  const filename = `sharepoint__daily_update_${safeDate}.mp3`;
+
+  console.log(`Synthesizing combined audio for [${includedSheets}] (${combinedText.length} chars)`);
+  const audioBuffer = await synthesize(
+    combinedText,
+    config.tts?.voice || 'en-IN-NeerjaExpressiveNeural',
+    config.tts?.rate || '+0%',
+    config.tts?.volume || '+0%'
+  );
+
+  const result = { sheet: includedSheets, filename, bytes: audioBuffer.length };
+
+  if (persistAudio) {
+    const outputPath = path.join(outputFolder, filename);
+    fs.writeFileSync(outputPath, audioBuffer);
+    result.outputPath = outputPath;
+    console.log(`Saved ${filename} (${audioBuffer.length} bytes)`);
+  } else {
+    console.log(`Generated ${filename} (${audioBuffer.length} bytes, not saved to disk)`);
+  }
+
+  if (includeBase64) {
+    result.contentType = 'audio/mpeg';
+    result.base64 = audioBuffer.toString('base64');
+  }
+
+  results.push(result);
+
+  if (notifyTeams) {
+    await sendTeamsNotification(process.env.TEAMS_WEBHOOK_URL || env.TEAMS_WEBHOOK_URL, config, results);
   }
 
   return { result: 'OK', workbook: sharepoint.file_path, today: todayLabel, results, skipped };
+}
+
+async function checkSheets() {
+  const env = loadLocalEnv();
+  const config = loadConfig(env);
+  const sharepoint = { ...config.sharepoint, client_secret: process.env.SP_CLIENT_SECRET || env.SP_CLIENT_SECRET };
+  if (!sharepoint.client_secret) throw new Error('SP_CLIENT_SECRET is missing. Add it to .env.local.');
+
+  const { buffer: fileBuffer } = await getSharePointFile(sharepoint);
+  const workbook = XLSX.read(fileBuffer, { type: 'buffer', cellDates: true });
+  const todayLabel = dateLabelForIst();
+
+  const filled = [];
+  const unfilled = [];
+
+  for (const sheetName of sharepoint.sheets || workbook.SheetNames) {
+    if (!workbook.SheetNames.includes(sheetName)) continue;
+    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { header: 1, defval: null, raw: false });
+    if (hasCurrentDateUpdate(rows, todayLabel)) {
+      filled.push(sheetName);
+    } else {
+      unfilled.push(sheetName);
+    }
+  }
+
+  return { today: todayLabel, filled, unfilled };
 }
 
 async function main() {
@@ -475,4 +510,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { runJob };
+module.exports = { runJob, checkSheets };

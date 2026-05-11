@@ -95,7 +95,7 @@ Sites.ReadWrite.All
 
 Then grant admin consent.
 
-`Sites.Read.All` is enough only for downloading the workbook. It is not enough for inserting the 20 blank rows after successful audio generation.
+`Sites.Read.All` is enough only for downloading the workbook.
 
 ## Runtime behavior
 
@@ -105,10 +105,8 @@ When n8n calls the API, the app:
 2. Checks row 2 in each configured sheet.
 3. Generates audio only if row 2 has today's IST date.
 4. Skips sheets that do not have today's date or do not produce voice text.
-5. After successful audio generation for a sheet, inserts 20 empty rows after the header row in that sheet.
-6. Uploads the updated workbook back to SharePoint.
-7. Returns generated MP3 files to n8n as base64.
-8. Does not save MP3 files to Hostinger storage.
+5. Returns generated MP3 files to n8n as base64.
+6. Does not save MP3 files to Hostinger storage.
 
 Incoming Teams webhooks can send JSON card messages, but they cannot upload MP3 binary files. For actual files in Teams, let n8n use a Microsoft Teams or Microsoft Graph connection to upload/send the binary files it receives from the API.
 
