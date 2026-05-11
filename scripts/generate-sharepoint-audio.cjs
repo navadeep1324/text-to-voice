@@ -224,7 +224,7 @@ function buildSectionedVoiceText(rows, includeDateIntro = true) {
   }
 
   const parts = [];
-  if (includeDateIntro && dateIntro) parts.push(`Updates for ${dateIntro}.`);
+  if (includeDateIntro && dateIntro) parts.push(`${dateIntro}.`);
   for (const section of sections) {
     if (section.tasks.length === 0) continue;
     if (section.header) parts.push(`${section.header}.`);
@@ -426,7 +426,7 @@ async function runJob(options = {}) {
       continue;
     }
 
-    voiceSegments.push({ sheetName, text });
+    voiceSegments.push({ sheetName, text: `Updates from ${sheetName}. ${text}` });
   }
 
   if (voiceSegments.length === 0) {
