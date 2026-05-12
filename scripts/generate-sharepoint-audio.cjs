@@ -207,11 +207,13 @@ function buildSectionedVoiceText(rows, includeDateIntro = true, todayLabel = '')
 
   for (let i = 1; i < rows.length; i++) {
     const col0 = (rows[i][0] ?? '').toString().trim();
-    const col1 = (rows[i][1] ?? '').toString().trim();
-    const col2 = (rows[i][2] ?? '').toString().trim();
-    const col3 = (rows[i][3] ?? '').toString().trim();
+    const col1 = (rows[i][1] ?? '').toString().trim(); // Project
+    const col2 = (rows[i][2] ?? '').toString().trim(); // Tasks
+    const col3 = (rows[i][3] ?? '').toString().trim(); // Targeted Date
+    const col4 = (rows[i][4] ?? '').toString().trim(); // Target Date Status
+    const col5 = (rows[i][5] ?? '').toString().trim(); // Status/Remarks
 
-    if (col0 && !col1) {
+    if (col0 && !col2) {
       if (col0 === col0.toUpperCase() && col0.replace(/[^A-Z]/g, '').length > 2) {
         sections.push({ header: col0, sub: '', tasks: [] });
       } else if (!dateIntro) {
@@ -224,11 +226,17 @@ function buildSectionedVoiceText(rows, includeDateIntro = true, todayLabel = '')
       continue;
     }
 
-    if (!col1) continue;
+    if (!col2) continue;
 
-    let segment = col1.endsWith('.') ? col1 : `${col1}.`;
-    if (col2) segment += ` Targeted date ${col2.replace(/\n/g, ' ')}.`;
-    if (col3) segment += ` Status: ${col3}.`;
+    let segment = col2.endsWith('.') ? col2 : `${col2}.`;
+    if (col1) segment = `${col1}. ${segment}`;
+    if (col3) segment += ` Targeted date ${col3.replace(/\n/g, ' ')}.`;
+    if (col4) {
+      const targetDateStatusMap = { met: 'We met it', achievable: 'it can be achievable', pushed: 'it is pushed' };
+      const spoken = targetDateStatusMap[col4.toLowerCase()] || col4;
+      segment += ` ${spoken}.`;
+    }
+    if (col5) segment += ` Status: ${col5}.`;
 
     if (sections.length === 0) sections.push({ header: '', sub: '', tasks: [] });
     sections[sections.length - 1].tasks.push(segment);
