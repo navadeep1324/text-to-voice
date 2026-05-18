@@ -456,7 +456,7 @@ async function runJob(options = {}) {
   const combinedText = `${todayLabel}. ${voiceSegments.map(s => s.text).join(' ')}`;
   const includedSheets = voiceSegments.map(s => s.sheetName).join(', ');
   const safeDate = todayLabel.replace(/\s+/g, '_').replace(/[^\w-]/g, '');
-  const filename = `sharepoint__daily_update_${safeDate}.mp3`;
+  const filename = `Daily_Status_${safeDate}.mp3`;
 
   console.log(`Synthesizing combined audio for [${includedSheets}] (${combinedText.length} chars)`);
   const audioBuffer = await synthesize(
